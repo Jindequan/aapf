@@ -1,0 +1,10 @@
+{
+  "autoload": {
+    "psr-4": {
+      "AF\\": "src/"
+    }
+  },
+  "require": {
+    "psr/log": "^1.1"
+  }
+}
