@@ -1,31 +1,79 @@
 <?php
 
-namespace AF\Core;
+namespace AF\Common;
 
-use APF\Tool\constant\ExceptionCode;
+use AF\Constants\ExceptionCode;
 use AF\Exception\FrameException;
+use AF\InterfaceCenter\Flow;
 
-class Router
+class Router implements Flow
 {
-    /**
-     * 默认返回controller目录下对应的class
-     * @param $uri
-     * @return $class
-     */
-    function getControllerClass()
+    private $controllerPath = '';
+    private $controllerNamespace = '';
+    private $requestUri = '';
+    private $defaultController = '';
+
+    protected static $instance;
+    public static function getInstance()
     {
-        $uri = (new Request())->getRequestUri();
-        $uri = trim($uri, '/');
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function process()
+    {
+        $this->setControllerPath();
+        $this->setControllerNamespace();
+        $this->setDefaultController();
+        $this->setRequestUri();
+
+        $controller = $this->getControllerClass();
+        $this->pushToNext();
+        return $controller;
+    }
+
+    public function pushToNext()
+    {
+        return Middleware::getInstance()->setUri($this->requestUri)->process();
+    }
+
+    private function setControllerPath()
+    {
+        $this->controllerPath = defined('CONTROLLER_PATH') ?
+            CONTROLLER_PATH :
+            APP_PATH . '/Controller/';
+    }
+
+    private function setControllerNamespace()
+    {
+        $this->controllerNamespace = defined('CONTROLLER_NAMESPACE') ?
+            CONTROLLER_NAMESPACE :
+            "App\Controller";
+    }
+
+    private function setRequestUri()
+    {
+        $uri = Request::getInstance()->getRequestUri();
+        $this->requestUri = trim($uri, '/');
+    }
+
+    private function setDefaultController()
+    {
+        $this->defaultController = defined('DEFAULT_CONTROLLER') ?
+            DEFAULT_CONTROLLER :
+            'IndexController';
+    }
+
+    private function getControllerClass()
+    {
         if (empty($uri)) {
-            return $this->getClass('IndexController');
+            return $this->getClass();
         }
 
-        list($file, $class) = $this->getFile($uri);
-        if (defined('CONTROLLER_PATH')) {
-            $filePath = CONTROLLER_PATH . $file;
-        } else {
-            $filePath = APP_PATH . '/Controller/' . $file;
-        }
+        list($file, $class) = $this->getByUri($uri);
+        $filePath = $this->controllerPath . $file;
 
         if (file_exists($filePath)) {
             return $this->getClass($class);
@@ -39,7 +87,7 @@ class Router
         if (!file_exists($routeFile)) {
             return $this->jumpNotFound();
         }
-        $route = include $routeFile;
+        $route = require_once $routeFile;
         if (!isset($route[$uri])) {
             return $this->jumpNotFound();
         }
@@ -59,13 +107,17 @@ class Router
         throw new FrameException(ExceptionCode::URL_NOT_EXIST);
     }
 
-    function getFile($uri)
+    function getByUri($uri)
     {
         $uriArray = explode('/', $uri);
         $file = '';
         $class = '';
         foreach ($uriArray as $dir) {
-            $tmp = str_replace('-', '_', strtolower($dir));
+            $tmpArr = explode('-', $dir);
+            $tmpArr = array_map(function ($value) {
+                return ucfirst($value);
+            }, $tmpArr);
+            $tmp = implode('', $tmpArr);
             $file .= '/' . $tmp;
             $class .= '\\' . $tmp;
         }
@@ -74,8 +126,11 @@ class Router
         return [$file, $class];
     }
 
-    function getClass($class)
+    function getClass($class = '')
     {
-        return "App\Controller" . "\\" . trim($class, '\\');
+        if (empty($class)) {
+            $class = $this->defaultController;
+        }
+        return $this->controllerNamespace . "\\" . trim($class, '\\');
     }
 }

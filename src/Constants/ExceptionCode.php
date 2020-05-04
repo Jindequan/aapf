@@ -1,8 +1,8 @@
 <?php
 
-namespace AF\Constant;
+namespace AF\Constants;
 
-class ExceptionCode
+class ExceptionCode extends BaseConstants
 {
     const FILE_NOT_EXIST = 10001;
     const CLASS_NOT_EXIST = 10002;
@@ -12,6 +12,7 @@ class ExceptionCode
     const VARIABLE_NOT_EXIST = 10006;
     const CONSTANT_NOT_EXIST = 10007;
     const URL_NOT_EXIST = 10008;
+    const INTERRUPTED_ACCESS = 11001;
 
     public $all = [
         self::FILE_NOT_EXIST => '文件不存在',
@@ -22,5 +23,6 @@ class ExceptionCode
         self::VARIABLE_NOT_EXIST => '变量不存在',
         self::CONSTANT_NOT_EXIST => '常量不存在',
         self::URL_NOT_EXIST => '访问不存在',
+        self::INTERRUPTED_ACCESS => '访问中断',
     ];
 }

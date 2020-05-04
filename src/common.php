@@ -1,27 +1,21 @@
 <?php
 
-use AF\Core\Request;
-use AF\Log;
+use AF\Common\Response;
+use AF\Log\Log;
 register_shutdown_function(function () {
     $error = error_get_last();
     if (!is_null($error)) {
         $errorType = $error['type'];
         $func = get_error_type($errorType);
-        (new APF\Tool\log\Log())->$func(get_error_message($error));
-        if (Request::getInstance()->isAjax() || Request::getInstance()->needJson()) {
-            APF\Core\Response::failJson();
-        }
-        (new Page())->specialPage('5xx', ['message' => $error['message'], 'error' => $error]);
+        (new Log())->$func(get_error_message($error));
+        Response::failJson();
     }
 });
 
 set_exception_handler(function (\Throwable $e){
     $message = get_exception_message($e);
     (new Log())->error($message);
-    if (Request::getInstance()->isAjax() || Request::getInstance()->needJson()) {
-        APF\Core\Response::failJson($e->getMessage());
-    }
-    (new Page())->specialPage('5xx', ['message' => $message, 'error' => $e]);
+    Response::failJson($e->getMessage());
 });
 
 function get_error_type($errorType) {

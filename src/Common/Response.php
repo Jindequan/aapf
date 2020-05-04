@@ -1,6 +1,6 @@
 <?php
 
-namespace AF\Core;
+namespace AF\Common;
 
 class Response
 {

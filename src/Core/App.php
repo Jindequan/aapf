@@ -2,6 +2,8 @@
 namespace AF\Core;
 
 use AF\AbstractCenter\AppAbstract;
+use AF\Common\Response;
+use AF\Common\Router;
 
 class App extends AppAbstract
 {
@@ -15,6 +17,13 @@ class App extends AppAbstract
     public function process()
     {
         //it contain all php life flow of this request
-        $router = (new Router())->getControllerClass();
+        $controllerClass = Router::getInstance()->process();
+        $result = (new $controllerClass)->handle();
+        Response::successJson($result);
+    }
+
+    public function pushToNext()
+    {
+        Response::failJson();
     }
 }

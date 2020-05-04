@@ -1,7 +1,7 @@
 <?php
-namespace AF\exception;
+namespace AF\Exception;
 
-use APF\Tool\constant\ExceptionCode;
+use AF\Constants\ExceptionCode;
 use Throwable;
 
 class FrameException extends \Exception
