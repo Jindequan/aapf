@@ -1,4 +1,4 @@
 <?php
 include '../vendor/autoload.php';
-include '../src/Core/App.php';
-(new \AF\Core\App())->run();
+
+$res = (new \AF\Core\Orm\Pdo('127.0.0.1', 'root', 'root'));

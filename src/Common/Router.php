@@ -68,30 +68,30 @@ class Router implements Flow
 
     private function getControllerClass()
     {
-        if (empty($uri)) {
+        if (empty($this->requestUri)) {
             return $this->getClass();
         }
 
-        list($file, $class) = $this->getByUri($uri);
+        list($file, $class) = $this->getByUri($this->requestUri);
         $filePath = $this->controllerPath . $file;
 
         if (file_exists($filePath)) {
             return $this->getClass($class);
         }
-        return $this->getByRoute($uri);
+        return $this->getByRoute();
     }
 
-    function getByRoute($uri)
+    function getByRoute()
     {
         $routeFile = CONFIG_PATH . '/route.php';
         if (!file_exists($routeFile)) {
             return $this->jumpNotFound();
         }
         $route = require_once $routeFile;
-        if (!isset($route[$uri])) {
+        if (!isset($route[$this->requestUri])) {
             return $this->jumpNotFound();
         }
-        $class = $this->getClass($route[$uri]);
+        $class = $this->getClass($route[$this->requestUri]);
         if (!class_exists($class)) {
             return $this->jumpNotFound();
         }
@@ -107,9 +107,9 @@ class Router implements Flow
         throw new FrameException(ExceptionCode::URL_NOT_EXIST);
     }
 
-    function getByUri($uri)
+    function getByUri()
     {
-        $uriArray = explode('/', $uri);
+        $uriArray = explode('/', $this->requestUri);
         $file = '';
         $class = '';
         foreach ($uriArray as $dir) {

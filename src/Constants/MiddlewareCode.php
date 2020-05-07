@@ -9,7 +9,7 @@ class MiddlewareCode extends BaseConstants
 
 
     public $all = [
-        self::FILE_NOT_EXIST => '文件不存在',
-        self::CLASS_NOT_EXIST => '类不存在',
+        self::STEP_CONTINUE => 'access continue',
+        self::STEP_BREAK => 'access break',
     ];
 }

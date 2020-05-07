@@ -1,5 +1,6 @@
 <?php
 
+use AF\Common\Request;
 use AF\Common\Response;
 use AF\Log\Log;
 register_shutdown_function(function () {
@@ -15,7 +16,7 @@ register_shutdown_function(function () {
 set_exception_handler(function (\Throwable $e){
     $message = get_exception_message($e);
     (new Log())->error($message);
-    Response::failJson($e->getMessage());
+    Response::failJson($e->getMessage(), $e->getCode());
 });
 
 function get_error_type($errorType) {
@@ -38,14 +39,16 @@ function get_error_type($errorType) {
 
 function get_error_message($error) {
     return
-        'message::' . $error["message"] .
+        'trace_id::' . Request::getInstance()->getTraceId() .
+        '; message::' . $error["message"] .
         '; line::' . $error["line"] .
         '; file::' .$error["file"];
 }
 
 function get_exception_message(\Throwable $e) {
     return
-        'message::' . $e->getMessage() .
+        'trace_id::' . Request::getInstance()->getTraceId() .
+        '; message::' . $e->getMessage() .
         '; line::' . $e->getLine() .
         '; file::' .$e->getFile() .
         '; trace::' .$e->getTraceAsString();
