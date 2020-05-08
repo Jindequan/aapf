@@ -8,7 +8,7 @@ namespace AF\Core\Orm;
  * Class Pdo
  * @package AF\Core\Orm
  */
-class Pdo extends \PDO
+class Pdo
 {
     private $instance = null;
     private $pk = 'id';
@@ -51,6 +51,21 @@ class Pdo extends \PDO
     }
 
     public function update()
+    {
+
+    }
+
+    public function where(array $where)
+    {
+
+    }
+
+    public function whereRaw(string $whereRaw)
+    {
+
+    }
+
+    public function execute()
     {
 
     }

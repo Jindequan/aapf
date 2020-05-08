@@ -1,4 +1,6 @@
 {
+  "name": "aapf",
+  "description": "aapf is just a simple php framework.",
   "autoload": {
     "psr-4": {
       "AF\\": "src/"
