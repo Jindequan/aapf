@@ -7,6 +7,17 @@ namespace AF\Tool;
 use AF\Constants\ExceptionCode;
 use AF\Exception\FrameException;
 
+/**
+ *  TraceId is a header attribute value also an unique identify.
+ * when a series requests happen we should confirm which step is wrong, or we need to know what happened in that
+ * so we should sign the request.
+ * traceId contains three parts.
+ * 1. traceId. created by the first request sender.
+ * 2. trace steps. added by receiver. step is 1.
+ * 3. time string. use format Y-m-d H:i:s
+ * @param string $traceId
+ * @return string
+ */
 class TraceId extends BaseTool
 {
     private $types = ['Datetime', 'SnowFlake'];
@@ -17,32 +28,22 @@ class TraceId extends BaseTool
             throw new FrameException(ExceptionCode::TRACE_TYPE_ERROR);
         }
         $fun = 'genTraceId' . $type;
-        return $this->$fun();
+        $id = $this->$fun();
+        return implode('_', [$id, '0', date('Y-m-d H:i:s')]);
     }
 
-    public function genTraceIdDatetime()
+    private function genTraceIdDatetime()
     {
         $dateTime = date('ymdHis');
         $dateTime .= (string)rand(1000, 9999);
         return $dateTime;
     }
 
-    public function genTraceIdSnowFlake()
+    private function genTraceIdSnowFlake()
     {
         return SnowFlake::getInstance()->id();
     }
 
-    /**
-     *  TraceId is a header attribute value also an unique identify.
-     * when a series requests happen we should confirm which step is wrong, or we need to know what happened in that
-     * so we should sign the request.
-     * traceId contains three parts.
-     * 1. traceId. created by the first request sender.
-     * 2. trace steps. added by receiver. step is 1.
-     * 3. time string. use format Y-m-d H:i:s
-     * @param string $traceId
-     * @return string
-     */
     public function nextTraceId(string $traceId)
     {
         if (empty($traceId)) {

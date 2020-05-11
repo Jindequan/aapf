@@ -22,6 +22,9 @@ class ExceptionCode extends BaseConstants
     const NOT_PERMITTED_METHOD = 20001;
     const NOT_PERMITTED_FORMAT = 20002;
 
+    //PdoException
+    const NOT_SET_CONNECTION = 30001;
+
     public $all = [
         self::FILE_NOT_EXIST => '文件不存在',
         self::CLASS_NOT_EXIST => '类不存在',
@@ -37,6 +40,8 @@ class ExceptionCode extends BaseConstants
         self::INTERRUPTED_ACCESS => '访问中断',
 
         self::NOT_PERMITTED_METHOD => '不允许的请求方法',
-        self::NOT_PERMITTED_FORMAT => '不允许的报文格式'
+        self::NOT_PERMITTED_FORMAT => '不允许的报文格式',
+
+        self::NOT_SET_CONNECTION => '未设置数据库连接',
     ];
 }

@@ -3,6 +3,8 @@
 
 namespace AF\Core\Orm;
 
+use AF\Core\Orm\Pdo;
+
 /**
  * 请求通道
  * 承载具体的数据库请求方法
@@ -12,12 +14,36 @@ namespace AF\Core\Orm;
  */
 abstract class Model
 {
-    abstract public function table();
+    public static $instance;
 
-    public function suffix()
+    abstract public static function table();
+
+    private static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new Pdo();
+        }
+        return self::$instance;
+    }
+
+    public static function suffix()
     {
         return '';
     }
 
+    public static function insert()
+    {
+
+    }
+
+    public static function where()
+    {
+        return self::$instance;
+    }
+
+    public static function whereRaw()
+    {
+
+    }
 
 }
