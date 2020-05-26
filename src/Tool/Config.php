@@ -7,55 +7,68 @@ use AF\Exception\FrameException;
 
 class Config
 {
-    protected static $config = [];
+    protected static $config = [
+        'test' => [
+            'pdd' => 'a',
+            'pdf' => 'b'
+        ]
+    ];
 
-    public static function get($key = '')
+    public static function get($key = '', $useFile = true, $reload = false)
     {
         if (empty($key)) {
             return self::$config;
         }
         $indexes = explode('.', $key);
-        return self::getByIndexes($indexes);
+        return self::getByIndexes($indexes, $useFile, $reload);
     }
 
     public static function set($key, $value)  {
         if (empty($key)) {
             throw new FrameException(ExceptionCode::PARAM_NOT_EXIST);
         }
-        $type = gettype($value);
         $indexes = explode('.', $key);
-
+        return self::setByIndexes($indexes, $value, count($indexes));
     }
 
-    private static function setByIndexes($indexes, $index =  0, $tmp = [])
+    private static function setByIndexes($indexes, $value, $index= 0, $tmp = [])
     {
-//        if (!isset(self::$config[])) {
-//            self::$config[$v] = [];
-//        }
+        //todo 不要覆盖原始可能存在的键. (存在可操作性太大，数据会发生类型的随意变更)
+        $tmp  = count($indexes) == $index ? $value : $tmp;
+        $index -= 1;
+        if ($index <= 0) {
+            self::$config[$indexes[$index]] = $tmp;
+
+            return true;
+        }
+
+        $newTmp = [
+            $indexes[$index] => $tmp
+        ];
+        return  self::setByIndexes($indexes, $value, $index, $newTmp);
     }
 
-    private static function getByIndexes($indexes, $index = 0, $tmp = [])
+    private static function getByIndexes($indexes, $useFile, $reload, $index = 0, $tmp = [])
     {
-        if (count($indexes) == $index) {
+        if (count($indexes) < $index + 1) {
             return $tmp;
         }
         if ($index === 0) {
-            self::getByFileName($indexes[$index]);
-            $tmp = isset(self::$config[$indexes[$index]]) ?: null;
-            if (is_null($tmp)) {
-                return null;
-            }
+            $fileName = $indexes[$index];
+            self::getByFileName($fileName, $useFile, $reload);
+            $tmp = self::$config[$indexes[$index]] ?? null;
+        } else {
+            $tmp = isset($indexes[$index]) && isset($tmp[$indexes[$index]]) ? $tmp[$indexes[$index]] : null;
         }
-        $index += 1;
-        $tmp = isset($tmp[$indexes[$index]]) ?: null;
+
         if (is_null($tmp)) {
             return null;
         }
 
-        return self::getByIndexes($indexes, $index, $tmp);
+        return self::getByIndexes($indexes, $index + 1, $tmp);
     }
 
-    private static function getByFileName($fileName)
+    private static function getByFileName($fileName, $useFile, $reload)
     {
         if (isset(self::$config[$fileName])) {
             return ;

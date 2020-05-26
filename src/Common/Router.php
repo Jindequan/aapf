@@ -29,7 +29,7 @@ class Router implements Flow
         $this->setDefaultController();
         $this->setRequestUri();
 
-        $controller = $this->getControllerClass();var_dump($controller);die;
+        $controller = $this->getControllerClass();
         $this->pushToNext();
         return $controller;
     }

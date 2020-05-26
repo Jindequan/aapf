@@ -1,5 +1,14 @@
 <?php
 include '../vendor/autoload.php';
+
+$config = \AF\Tool\Config::get();
+var_dump($config);
+\AF\Tool\Config::set('test.pdf.path', '/var/www/pdf');
+$config = \AF\Tool\Config::get();
+\AF\Tool\Config::set('test.pdf.name', 'name');
+$config = \AF\Tool\Config::get();
+var_dump($config);die;
+
 $a = [1,2,3];
 foreach ($a as &$value) {
 var_dump($value);//$value是声明的一个变量，&是引用这个变量的内存地址。三次循环中修改了$value的值分别为$a[0],$a[1],$a[2]。且$a也发生了变化，
@@ -11,7 +20,7 @@ var_dump($value);//循环前两次分别$value=$a[0](1),$a[1](2),第三次的时
 }
 var_dump($a);die;
 
-$res = \AF\Core\Orm\Pdo::getInstance()->setConnection('127.0.0.1', 3306, 'root', 'root', 'mysql');
+$res = \AF\Core\Orm\Pdo::getInstance()->setConnection('192.168.2.71', 3306, 'erp1125', 'R3peOJwAA3eY', 'mysql');
 
 var_dump($res);die;
 $id = \AF\Tool\TraceId::getInstance()->genTraceId('Datetime');

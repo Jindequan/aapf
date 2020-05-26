@@ -16,12 +16,20 @@ abstract class Model
 {
     public static $instance;
 
-    abstract public static function table();
+    public static function readDB()
+    {
 
-    private static function getInstance()
+    }
+
+    public static function writeDB()
+    {
+
+    }
+
+    public static function getInstance($host, $port, $user, $password, $database, $option = [])
     {
         if (is_null(self::$instance)) {
-            self::$instance = new Pdo();
+            self::$instance = new Pdo($host, $port, $user, $password, $database, $option);
         }
         return self::$instance;
     }
